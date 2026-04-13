@@ -95,40 +95,61 @@ class _PaginaInicialState extends State<PaginaInicial> {
             SizedBox(height: 30),
 
             GestureDetector(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+
+                final resultado = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
                         PaginaLista("Escolaridade", escolaridades),
                   ),
                 );
+
+                if (resultado != null) {
+                  setState(() {
+                    escolaridades = resultado;
+                  });
+                }
               },
               child: caixa("Escolaridade"),
             ),
 
             GestureDetector(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+
+                final resultado = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
                         PaginaLista("Projetos", projetos),
                   ),
                 );
+
+                if (resultado != null) {
+                  setState(() {
+                    projetos = resultado;
+                  });
+                }
               },
               child: caixa("Projetos"),
             ),
 
             GestureDetector(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+
+                final resultado = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
                         PaginaLista("Recomendações", recomendacoes),
                   ),
                 );
+
+                if (resultado != null) {
+                  setState(() {
+                    recomendacoes = resultado;
+                  });
+                }
               },
               child: caixa("Recomendações"),
             ),
@@ -155,7 +176,7 @@ class _PaginaInicialState extends State<PaginaInicial> {
             Icon(
               Icons.folder_open,
               size: 28,
-              color: const Color.fromARGB(255, 199, 61, 223),
+              color: const Color.fromARGB(255, 0, 0, 0),
             ),
 
             SizedBox(width: 12),
@@ -165,7 +186,7 @@ class _PaginaInicialState extends State<PaginaInicial> {
               style: TextStyle(
                 fontSize: 19,
                 fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 199, 61, 223),
+                color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ],
@@ -177,7 +198,7 @@ class _PaginaInicialState extends State<PaginaInicial> {
 
 ///////////////////mostra informações/////////////////////////
 
-class PaginaLista extends StatelessWidget {
+class PaginaLista extends StatefulWidget {
 
   final String titulo;
   final List<String> lista;
@@ -185,31 +206,58 @@ class PaginaLista extends StatelessWidget {
   PaginaLista(this.titulo, this.lista);
 
   @override
+  _PaginaListaState createState() => _PaginaListaState();
+}
+
+class _PaginaListaState extends State<PaginaLista> {
+
+  late List<String> listaLocal;
+
+  @override
+  void initState() {
+    super.initState();
+    listaLocal = List.from(widget.lista);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
 
       appBar: AppBar(
-        title: Text(titulo),
+        title: Text(widget.titulo),
         backgroundColor: const Color.fromARGB(255, 199, 61, 223),
       ),
 
       body: Column(
         children: [
+
           Expanded(
-            child: lista.isEmpty
+            child: listaLocal.isEmpty
                 ? Center(child: Text("Nenhuma informação adicionada"))
                 : ListView.builder(
-                    itemCount: lista.length,
+                    itemCount: listaLocal.length,
                     itemBuilder: (context, index) {
 
                       return Card(
                         margin: EdgeInsets.all(10),
+
                         child: ListTile(
                           leading: Icon(
                             Icons.check_circle,
                             color: const Color.fromARGB(255, 199, 61, 223),
                           ),
-                          title: Text(lista[index]),
+
+                          title: Text(listaLocal[index]),
+
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+
+                            onPressed: () {
+                              setState(() {
+                                listaLocal.removeAt(index);
+                              });
+                            },
+                          ),
                         ),
                       );
                     },
@@ -222,11 +270,13 @@ class PaginaLista extends StatelessWidget {
               icon: Icon(Icons.arrow_back),
               label: Text("Voltar"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 199, 61, 223),
+                backgroundColor: const Color.fromARGB(255, 223, 218, 224),
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               onPressed: () {
-                Navigator.pop(context);
+
+                Navigator.pop(context, listaLocal);
+
               },
             ),
           ),
@@ -236,8 +286,8 @@ class PaginaLista extends StatelessWidget {
   }
 }
 
-
 ////////////////////mudar informações/////////////////////////////
+
 class PaginaAdicionar extends StatefulWidget {
 
   final String nomeAtual;
